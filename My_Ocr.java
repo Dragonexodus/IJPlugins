@@ -54,7 +54,7 @@ public class My_Ocr implements PlugIn{
                 System.out.println("RES: " + res);
             }
 //            p.destroy();
-            p = Runtime.getRuntime().exec("/bin/rm plugins/IJPlugins/*.ppm");
+            p = Runtime.getRuntime().exec("/bin/rm plugins/IJPlugins/img.ppm");
             if (p.getInputStream().available() > 0) {
                 res = inputStreamAsStrings(p.getInputStream());
                 System.out.println("rm: " + res);
