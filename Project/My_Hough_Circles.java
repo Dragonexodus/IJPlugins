@@ -40,7 +40,7 @@ import java.util.ArrayList;
  */
 public class My_Hough_Circles implements PlugInFilter {
 
-    private static Point centerPoint[];        // Center Points of the Circles Found.
+    private static Point centerPoint[]; // Center Points of the Circles Found.
     private final int CR_RADIUS = 0;
     private final int CR_COUNT = 1;
     public int radiusMin;   // Find circles with radius grater or equal radiusMin

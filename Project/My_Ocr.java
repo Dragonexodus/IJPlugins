@@ -35,6 +35,7 @@ public class My_Ocr implements PlugIn{
 
     @Override
     public void run(String arg) {
+
         Process p;
         try {
             String res = null;
@@ -55,10 +56,7 @@ public class My_Ocr implements PlugIn{
             }
 //            p.destroy();
             p = Runtime.getRuntime().exec("/bin/rm plugins/IJPlugins/img.ppm");
-            if (p.getInputStream().available() > 0) {
-                res = inputStreamAsStrings(p.getInputStream());
-                System.out.println("rm: " + res);
-            }
+
             p.waitFor();
 //            p.destroy();
         } catch (IOException | InterruptedException e) {
@@ -72,7 +70,7 @@ public class My_Ocr implements PlugIn{
 
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));
         StringBuilder sb = new StringBuilder();
-        String line = null;
+        String line;
 
         while ((line = br.readLine()) != null)
             sb.append(line + "\n");

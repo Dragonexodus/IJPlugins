@@ -6,8 +6,8 @@ import ij.ImagePlus;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 
-public class MyInverter_A implements PlugInFilter {
-    public MyInverter_A() {
+public class My_Inverter_A implements PlugInFilter {
+    public My_Inverter_A() {
     }
 
     public int setup(String var1, ImagePlus var2) {

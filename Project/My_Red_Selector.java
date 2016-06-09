@@ -7,7 +7,7 @@ import ij.plugin.filter.PlugInFilter;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
-public class My_RedSelector_ implements PlugInFilter {
+public class My_Red_Selector implements PlugInFilter {
     private static Integer counter = 0;
     private ImagePlus img;
 

@@ -1,3 +1,5 @@
+package plugins.pM;
+
 /**
  * This class contains coordinates for description of lines (may be used also for description of an single point) 
  * @author MH

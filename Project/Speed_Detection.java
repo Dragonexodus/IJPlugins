@@ -1,17 +1,13 @@
-import java.awt.*;
-import java.awt.image.ImageFilter;
-import java.io.File;
-
-import ij.*;
-import ij.gui.*;
-import ij.io.FileInfo;
-import ij.process.*;
-import ij.plugin.Commands;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+import plugins.pM.Coordinates;
+import plugins.pM.XML;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import parseXML.XML;
 
 public class Speed_Detection implements PlugIn {
 

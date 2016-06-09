@@ -4,7 +4,7 @@ import ij.gui.*;
 import java.awt.*;
 import ij.plugin.filter.*;
 
-public class MyInvert_ implements PlugInFilter {
+public class My_Inverter implements PlugInFilter {
 	ImagePlus imp;
 
 	public int setup(String arg, ImagePlus imp) {
