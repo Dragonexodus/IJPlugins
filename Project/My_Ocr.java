@@ -21,10 +21,7 @@
 //package sigus.templateMatching;
 //import sigus.*;
 
-import ij.ImagePlus;
 import ij.plugin.PlugIn;
-import ij.plugin.filter.PlugInFilter;
-import ij.process.ImageProcessor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
