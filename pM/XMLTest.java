@@ -1,8 +1,12 @@
-package plugins.pM;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 
 public class XMLTest {
 
-//	@Test
+
+	@Test
 	public void testWriteXMLFile() {
 		String fileOutputPath ="/home/dragonexodus/Digitalebilderverarbeitung/workspace/Projekt_Schilderkennung/test1.xml";
 		
@@ -11,4 +15,5 @@ public class XMLTest {
 		t.addObject(60, 0,0 , 10, 10);
 		t.writeXMLFile("filePath", "fileName", fileOutputPath);
 	}
+
 }
