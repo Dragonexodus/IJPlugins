@@ -1,5 +1,3 @@
-package plugins.pM;
-
 /**
  * This class contains coordinates for description of lines (may be used also for description of an single point) 
  * @author MH
@@ -26,6 +24,36 @@ public class Coordinates<A> {
 			this.yStart = null;
 			this.xStop = null;
 			this.yStop = null;
+		}
+		
+		public boolean equalsStart(Object other) {
+			if (other instanceof Coordinates) {
+				Coordinates<?> otherCoordinates = (Coordinates<?>) other;
+				
+				Boolean isStartEq = ((this.xStart == otherCoordinates.xStart
+						|| (this.xStart != null && otherCoordinates.xStart != null && this.xStart.equals(otherCoordinates.xStart)))
+						&& (this.yStart == otherCoordinates.yStart || (this.yStart != null && otherCoordinates.yStart != null
+								&& this.yStart.equals(otherCoordinates.yStart))));
+				
+				return isStartEq;
+			}
+
+			return false;
+		}
+		
+		
+		public boolean equalsStop(Object other) {
+			if (other instanceof Coordinates) {
+				Coordinates<?> otherCoordinates = (Coordinates<?>) other;
+				
+				Boolean isStopEq = ((this.xStop == otherCoordinates.xStop
+						|| (this.xStop != null && otherCoordinates.xStop != null && this.xStop.equals(otherCoordinates.xStop)))
+						&& (this.yStop == otherCoordinates.yStop || (this.yStop != null && otherCoordinates.yStop != null
+								&& this.yStop.equals(otherCoordinates.yStop))));
+				return isStopEq;
+			}
+
+			return false;
 		}
 		
 		public boolean equals(Object other) {
@@ -63,7 +91,6 @@ public class Coordinates<A> {
 		public A getyStop() {
 			return this.yStop;
 		}
-		
 		
 		public void setStart(A xStart, A yStart){
 			this.xStart = xStart;
