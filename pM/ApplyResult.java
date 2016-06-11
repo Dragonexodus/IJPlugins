@@ -15,49 +15,94 @@ import java.util.List;
 
 public class ApplyResult {
 	private List<SpeedObject<Integer>> speedList;
-	private String inputFilePath;
-	private String outputFilePath;
+	private File inFile;
+	private String outXMLPath;
+	private String outGraphicPath;
 
-	
-	public ApplyResult(List<SpeedObject<Integer>> list, String inputFilePath, String OutputFilePath) {
-		
-		final String fileName = "7";
-		final String fileType = ".png";
-		final String path = "/home/dragonexodus/Digitalebilderverarbeitung/Projekt/";
-		final String filePath = path + fileName + fileType;
-		
-		if (!(new File(filePath)).exists()) {
-			IJ.log("File not found: " + filePath);
+	/**
+	 * This class handles boundingBox and speed painting, file writing ...
+	 * 
+	 * @param list
+	 * @param inputFilePath
+	 *            Complete Path to File
+	 * @param outputPath
+	 *            Path to a directory ( home/test/) without a file!
+	 */
+	public ApplyResult(List<SpeedObject<Integer>> list, String inputFilePath, String outputPath) {
+
+		if(inputFilePath == null){
+			IJ.log("input path empty");
 			return;
 		}
-		
+		if(outputPath == null){
+			outputPath = inputFilePath;
+		}
+		this.inFile = new File(inputFilePath);
+		if (!inFile.exists()) {
+			IJ.log("File not found: " + inputFilePath);
+			return;
+		}
+		if (!inFile.isFile()) {
+			IJ.log("Its not a File");
+			return;
+		}
+
 		this.speedList = list;
 		if (this.speedList == null) {
+			IJ.log("SpeedList is null");
 			return;
 		}
 		if (this.speedList.isEmpty() || this.speedList.get(0) == null) {
+			IJ.log("SpeedObject is null");
 			return;
 		}
-		SpeedObject<Integer> first = this.speedList.get(0);
-		int speed = first.getSpeed();
-		int xBB = first.getxCenter() - first.getRadius();
-		int yBB = first.getyCenter() - first.getRadius();
-		int w = first.getRadius() * 2;
 
-		this.speedList.remove(0);
-		XML xml = new XML(speed, xBB, yBB, w, w);
+		exctractOutPaths(outputPath);
 
-		for (SpeedObject<Integer> speedObject : this.speedList) {
-
-			speed = speedObject.getSpeed();
-			xBB = speedObject.getxCenter() - speedObject.getRadius();
-			yBB = speedObject.getyCenter() - speedObject.getRadius();
-			w = speedObject.getRadius() * 2;
-
-			xml.addObject(speed, xBB, yBB, w, w);
-		}
-
-		// xml.writeXMLFile(inputFilePath, inputFileName, outputFilePath);
+		paintAndExport();
 
 	}
+
+	private void paintAndExport() {
+		ImagePlus original = new ImagePlus(inFile.getAbsolutePath());
+		ImagePlus duplicate = original.duplicate();
+		ImageProcessor ip = duplicate.getProcessor();
+
+		XML xml = new XML();
+
+		for (SpeedObject<Integer> sO : this.speedList) {
+
+			int xBB = sO.getxCenter() - sO.getRadius();
+			int yBB = sO.getyCenter() - sO.getRadius();
+			int w = sO.getRadius() * 2;
+
+			ip.setColor(new Color(200, 0, 0));
+			Color background = new Color(0, 0, 0);
+			ip.drawRect(xBB, yBB, w, w);
+			ip.setColor(new Color(255, 255, 255));
+			ip.drawString(sO.getSpeed().toString(), sO.getxCenter(), sO.getyCenter() + sO.getRadius() + sO.getOffset(),
+					background);
+
+			xml.addObject(sO.getSpeed(), xBB, yBB, w, w);
+		}
+		IJ.save(duplicate, outGraphicPath);
+		xml.writeXMLFile(inFile.getAbsolutePath(), inFile.getName(), outXMLPath);
+	}
+
+	private void exctractOutPaths(String outputPath) {
+		File outFile = new File(outputPath);
+		if (!outFile.isDirectory()) {
+			String path = outFile.getParent();
+			outFile = new File(path);
+		}
+
+		int splitPos = inFile.getName().lastIndexOf(".");
+		String outName = File.separator + inFile.getName().substring(0, splitPos);
+		String outXML = outName + "_RSD.XML";
+		String outGraphic = outName + "_RSD" + inFile.getName().substring(splitPos);
+
+		outGraphicPath = outFile.getAbsolutePath() + outGraphic;
+		outXMLPath = outFile.getAbsolutePath() + outXML;
+	}
+
 }

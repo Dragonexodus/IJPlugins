@@ -1,6 +1,4 @@
 
-
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,55 +16,79 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * This class builds the xml as wished of sedenius.. further improvements can be done.. but aren't neccessary for us
+ * This class builds the xml as wished of sedenius.. further improvements can be
+ * done.. but aren't neccessary for us
+ * 
  * @author MH
  *
  */
 public class XML {
-	
+
 	private List<Integer> object;
 	private int objectSize;
-	
+
 	/**
 	 * constructer of an XML, also adds an speedsign
-	 * @param speed 
-	 * @param x -Pos of BoundingBox
-	 * @param y -Pos of BoundingBox
-	 * @param widht -of BoundingBox
-	 * @param height -of BoundingBox
+	 * 
+	 * @param speed
+	 * @param x
+	 *            -Pos of BoundingBox
+	 * @param y
+	 *            -Pos of BoundingBox
+	 * @param widht
+	 *            -of BoundingBox
+	 * @param height
+	 *            -of BoundingBox
 	 */
 	public XML(Integer speed, Integer x, Integer y, Integer widht, Integer height) {
 		super();
 		object = new ArrayList<>();
-		addObject(speed, x, y, widht,height);
-		objectSize = object.size(); //Size of one object
+		addObject(speed, x, y, widht, height);
+		objectSize = object.size(); // Size of one object
+	}
+
+	public XML() {
+		super();
+		object = null;
 	}
 
 	/**
-	 * Adds another detected speed sign, NO errorchecking.. so use "0" instead of "null"
+	 * Adds another detected speed sign, NO errorchecking.. so use "0" instead
+	 * of "null"
+	 * 
 	 * @param speed
 	 * @param x
 	 * @param y
 	 * @param widht
 	 * @param height
 	 */
-	public void addObject(Integer speed, Integer x, Integer y, Integer widht, Integer height){
-		object.add(speed);
-		object.add(x);
-		object.add(y);
-		object.add(widht);
-		object.add(height);
+	public void addObject(Integer speed, Integer x, Integer y, Integer widht, Integer height) {
+		if (!(object == null)) {
+			object.add(speed);
+			object.add(x);
+			object.add(y);
+			object.add(widht);
+			object.add(height);
+		} else {
+			object = new ArrayList<>();
+			addObject(speed, x, y, widht, height);
+			objectSize = object.size();
+		}
 	}
-	
+
 	/**
 	 * This method writes the file.
-	 * @param inputFilePath -e.g. "home/user/test/input.xml"
-	 * @param inputFileName - e.g. "input.xml"
-	 * @param outputFilePath -e.g. "full output path; "home/user/test/output.xml"
+	 * 
+	 * @param inputFilePath
+	 *            -e.g. "home/user/test/input.xml"
+	 * @param inputFileName
+	 *            - e.g. "input.xml"
+	 * @param outputFilePath
+	 *            -e.g. "full output path; "home/user/test/output.xml"
 	 */
 	public void writeXMLFile(String inputFilePath, String inputFileName, String outputFilePath) {
 		try {
-			//TODO: Make it better....
+			// TODO: Make it better....
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			// root elements
@@ -120,34 +142,34 @@ public class XML {
 			Element frame = doc.createElement("frame");
 			frame.setAttribute("index", "212");
 			frames.appendChild(frame);
-			
-			//info frame
+
+			// info frame
 			Element infoFrame = doc.createElement("info");
 			frame.appendChild(infoFrame);
-			
+
 			Element day = doc.createElement("day");
 			day.setAttribute("confidence", "0.8");
 			infoFrame.appendChild(day);
-			
+
 			Element night = doc.createElement("night");
 			night.setAttribute("confidence", "0.2");
 			infoFrame.appendChild(night);
-			
+
 			Element objects = doc.createElement("objects");
 			frame.appendChild(objects);
-					
-			for(int i = 0; i < object.size();i = i + objectSize){
-				buildObject(doc, objects, object.get(i),object.get(i+1),object.get(i+2),object.get(i+3),object.get(i+4));
+
+			for (int i = 0; i < object.size(); i = i + objectSize) {
+				buildObject(doc, objects, object.get(i), object.get(i + 1), object.get(i + 2), object.get(i + 3),
+						object.get(i + 4));
 			}
 			// write the content into xml file
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(
-					outputFilePath));
+			StreamResult result = new StreamResult(new File(outputFilePath));
 
 			// Output to console for testing
-			//result = new StreamResult(System.out);
+			// result = new StreamResult(System.out);
 
 			transformer.transform(source, result);
 
@@ -161,6 +183,7 @@ public class XML {
 
 	/**
 	 * builds an speed sign object ..
+	 * 
 	 * @param doc
 	 * @param objects
 	 * @param speed
@@ -169,53 +192,54 @@ public class XML {
 	 * @param widht
 	 * @param height
 	 */
-	private void buildObject(Document doc, Element objects, Integer speed, Integer x, Integer y, Integer widht, Integer height) {
+	private void buildObject(Document doc, Element objects, Integer speed, Integer x, Integer y, Integer widht,
+			Integer height) {
 		Element object = doc.createElement("object");
-		object.setAttribute("id", Integer.toString((int)(Math.random())));
+		object.setAttribute("id", Integer.toString((int) (Math.random())));
 		objects.appendChild(object);
-		
-		//info Object
+
+		// info Object
 		Element infoObject = doc.createElement("info");
 		object.appendChild(infoObject);
-		
+
 		Element category1 = doc.createElement("category");
 		category1.setAttribute("confidence", "0.9");
 		category1.appendChild(doc.createTextNode("speed_limit_sign"));
 		infoObject.appendChild(category1);
-		
+
 		Element category2 = doc.createElement("category");
 		category2.setAttribute("confidence", "0.1");
 		category2.appendChild(doc.createTextNode("tasty_venison"));
 		infoObject.appendChild(category2);
-		
-		Element intAttribute= doc.createElement("intAttribute");
+
+		Element intAttribute = doc.createElement("intAttribute");
 		intAttribute.setAttribute("key", "speedLimit");
 		intAttribute.appendChild(doc.createTextNode(Integer.toString(speed)));
 		infoObject.appendChild(intAttribute);
-		
+
 		Element shape = doc.createElement("shape");
 		shape.setAttribute("type", "rectangle");
 		object.appendChild(shape);
-		
+
 		Element widthElement = doc.createElement("width");
 		widthElement.appendChild(doc.createTextNode(Integer.toString(widht)));
 		shape.appendChild(widthElement);
-		
-		Element heightElement= doc.createElement("height");
+
+		Element heightElement = doc.createElement("height");
 		heightElement.appendChild(doc.createTextNode(Integer.toString(height)));
 		shape.appendChild(heightElement);
-		
-		Element position= doc.createElement("position");
+
+		Element position = doc.createElement("position");
 		shape.appendChild(position);
-		
+
 		Element xPos = doc.createElement("x");
 		xPos.appendChild(doc.createTextNode(Integer.toString(x)));
 		position.appendChild(xPos);
-		
+
 		Element yPos = doc.createElement("y");
 		yPos.appendChild(doc.createTextNode(Integer.toString(y)));
 		position.appendChild(yPos);
-		
+
 		Element refPoint = doc.createElement("referencePoint");
 		refPoint.appendChild(doc.createTextNode("topleft"));
 		shape.appendChild(refPoint);
