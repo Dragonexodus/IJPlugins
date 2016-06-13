@@ -1,9 +1,9 @@
-import static org.junit.Assert.*;
+package plugins.pM;
+
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 public class ApplyResultTest {
 

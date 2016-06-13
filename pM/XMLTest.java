@@ -1,4 +1,4 @@
-import static org.junit.Assert.*;
+package plugins.pM;
 
 import org.junit.Test;
 
@@ -15,5 +15,4 @@ public class XMLTest {
 		t.addObject(60, 0,0 , 10, 10);
 		t.writeXMLFile("filePath", "fileName", fileOutputPath);
 	}
-
 }

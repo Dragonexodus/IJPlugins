@@ -1,8 +1,7 @@
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+package plugins.pM;
 
 import junit.framework.Assert;
+import org.junit.Test;
 
 public class SpeedObjectTest {
 
@@ -21,6 +20,4 @@ public class SpeedObjectTest {
 		Assert.assertTrue(test.isCenterEmpty());
 		
 	}
-
-
 }

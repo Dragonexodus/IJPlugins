@@ -1,16 +1,11 @@
+package plugins.pM;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
+
 import java.awt.*;
-import java.awt.image.ImageFilter;
 import java.io.File;
-import java.lang.reflect.GenericArrayType;
-
-import ij.*;
-import ij.gui.*;
-import ij.io.FileInfo;
-import ij.process.*;
-import ij.plugin.Commands;
-import ij.plugin.PlugIn;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ApplyResult {
