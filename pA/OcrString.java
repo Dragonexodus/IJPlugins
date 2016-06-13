@@ -7,32 +7,24 @@ import java.io.InputStreamReader;
 
 public class OcrString {
 
-    static public String getString(String path, String imgName) {
+    static public String getString(String fileName) {
 
         Process p;
         String res = null;
         try {
-            p = Runtime.getRuntime().exec(path + "/nconvert/nconvert -out ppm -o " + path + "/img.ppm " + path + "/img2.png");
-            /*p = Runtime.getRuntime().exec("pwd");
-            if (p.getInputStream().available() > 0) {
-                res = inputStreamAsStrings(p.getInputStream());
-                System.out.println("PWD: " + res);
-            }*/
-            p.waitFor();
-//            p.destroy();
-
-            p = Runtime.getRuntime().exec(path + "/gocr/gocr " + path + "/img.ppm");
+            p = Runtime.getRuntime().exec("plugins/Project/gocr/gocr plugins/img.pgm");
             p.waitFor();
             if (p.getInputStream().available() > 0) {
                 res = inputStreamAsStrings(p.getInputStream());
-                System.out.println("RES: " + res);
+                /*IJ.log("gocr: " + res);
+                res = "";*/
             }
-//            p.destroy();
+            p.destroy();
 
             //info Dateien löschen
-            p = Runtime.getRuntime().exec("/bin/rm " + path + "/img.ppm");
+            p = Runtime.getRuntime().exec("/bin/rm plugins/img.pgm");
             p.waitFor();
-//            p.destroy();
+            p.destroy();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {

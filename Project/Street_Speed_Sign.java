@@ -1,9 +1,12 @@
 import ij.IJ;
 import ij.ImagePlus;
+import ij.io.FileSaver;
 import ij.plugin.PlugIn;
 import ij.process.ByteProcessor;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import plugins.pA.HoughCircles;
+import plugins.pA.OcrString;
 import plugins.pM.SpeedObject;
 
 import java.awt.*;
@@ -20,7 +23,8 @@ public class Street_Speed_Sign implements PlugIn {
 
     @Override
     public void run(String arg) {
-        final String imgFile = "plugins/Project/imgs/vlcsnap-2016-05-04-14h27m18s219.png";
+//        final String imgFile = "plugins/Project/imgs/vlcsnap-2016-05-04-14h27m18s219.png";
+        final String imgFile = "plugins/Project/imgs/vlcsnap-2016-05-04-14h26m18s343.png";
 
         if (!(new File(imgFile)).exists()) {
             IJ.log("File not found: " + imgFile);
@@ -39,9 +43,11 @@ public class Street_Speed_Sign implements PlugIn {
         imgG8.show();
         checkCirkles(imgG8, speedList);
 
+        checkSpeedSign(imgDup, speedList);
+
         //info Testausgabe
-        for (int i = 0; i < speedList.size(); i++)
-            IJ.log("point: " + speedList.get(i).getxCenter() + "," + speedList.get(i).getyCenter() + " radius: " + speedList.get(i).getRadius());
+//        for (int i = 0; i < speedList.size(); i++)
+//            IJ.log("point: " + speedList.get(i).getxCenter() + "," + speedList.get(i).getyCenter() + " radius: " + speedList.get(i).getRadius());
     }
 
     private ImagePlus getRedRegionsImg(ImagePlus img) {
@@ -62,6 +68,16 @@ public class Street_Speed_Sign implements PlugIn {
     }
 
     private void checkCirkles(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
+
+        //info Testausgabe
+        boolean printTest = true;
+        ImagePlus imgRgb = img.duplicate();
+        ImageConverter ic = new ImageConverter(imgRgb);
+        ic.convertToRGB();
+        ImageProcessor ipRgb = imgRgb.getProcessor();
+        ipRgb.setColor(255);    // blue
+        if (printTest)
+            imgRgb.show();
 
         ImageProcessor ipG8 = img.getProcessor();
 
@@ -123,14 +139,11 @@ public class Street_Speed_Sign implements PlugIn {
             points.add(p);
 
             //info Testausgabe
-            /*ImagePlus imgRgb = img.duplicate();
-            ImageConverter ic = new ImageConverter(imgRgb);
-            ic.convertToRGB();
-            ImageProcessor ipRgb = imgRgb.getProcessor();
-            ipRgb.setColor(255);
-            for (int j = 0; j < points.size(); j++)
-                ipRgb.drawLine(x, y, (int) points.get(j).getX(), (int) points.get(j).getY());
-            imgRgb.show();*/
+            if (printTest) {
+                for (int j = 0; j < points.size(); j++)
+                    ipRgb.drawLine(x, y, (int) points.get(j).getX(), (int) points.get(j).getY());
+                imgRgb.updateAndDraw();
+            }
 
             if (treffer >= 6)
                 IJ.log("point: " + x + "," + y + " radius:" + radius);
@@ -139,5 +152,80 @@ public class Street_Speed_Sign implements PlugIn {
                 i--;
             }
         }
+    }
+
+    private void checkSpeedSign(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
+
+        ArrayList<Integer> speedSigns = new ArrayList<>();
+        speedSigns.add(5);
+        speedSigns.add(10);
+        speedSigns.add(20);
+        speedSigns.add(30);
+        speedSigns.add(40);
+        speedSigns.add(50);
+        speedSigns.add(60);
+        speedSigns.add(80);
+        speedSigns.add(90);
+        speedSigns.add(100);
+        speedSigns.add(110);
+        speedSigns.add(120);
+        speedSigns.add(130);
+
+        for (int i = 0; i < speedList.size(); i++) {
+            Integer x = speedList.get(i).getxCenter();
+            Integer y = speedList.get(i).getyCenter();
+            Integer radius = speedList.get(i).getRadius();
+            Double diagonalPixelMultiplier = 1.0 / Math.sqrt(2.0);          // 0.7071
+            Integer centerOffset = (int) (Math.sin(45.0) * radius * 0.86);  // 0.86
+
+            ImageProcessor ip = img.duplicate().getProcessor();
+            ip.setRoi(x - centerOffset, y - centerOffset, centerOffset * 2, centerOffset * 2);
+            ImageProcessor ipNew = ip.crop();
+            ImagePlus imgNew = new ImagePlus("img", deleteRedColor(ipNew).getProcessor());
+            new FileSaver(imgNew).saveAsPgm("plugins/img.pgm"); // .pgm
+
+            String speed = OcrString.getString("/home/celentano/dev/imagej1/plugins/img.png");
+
+            if (speed != null) {
+                //TODO regex
+                String pattern = "\\D+";
+                speed = speed.replaceAll(pattern, "");
+                if (speed.length() > 0) {
+                    if (speedSigns.contains(Integer.parseInt(speed)))
+                        IJ.log("speed: " + speed);
+                    else {
+                        speedList.remove(i);
+                        i--;
+                    }
+                } else {
+                    speedList.remove(i);
+                    i--;
+                }
+            } else {
+                speedList.remove(i);
+                i--;
+            }
+        }
+    }
+
+    private ImagePlus deleteRedColor(ImageProcessor ip_) {
+        ImagePlus img = new ImagePlus("img", ip_);
+        ImageProcessor ip = img.getProcessor();
+        Double mult = 1.5;
+
+        for (int y = 0; y < img.getHeight(); y++)
+            for (int x = 0; x < img.getWidth(); x++) {
+                int[] color = img.getPixel(x, y);
+                if (color[0] > 0 && color[0] > mult * color[1] && color[0] > mult * color[2])
+                    ip.putPixel(x, y, Integer.MAX_VALUE);
+            }
+        /*ImageConverter ic = new ImageConverter(img);
+        ic.convertToGray8();*/
+
+        //Convert to Binary
+        ImagePlus binaryImage = new ImagePlus("Binary", img.getProcessor());
+        IJ.runPlugIn(binaryImage, "ij.plugin.Thresholder", "");
+
+        return img;
     }
 }

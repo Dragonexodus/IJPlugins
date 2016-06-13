@@ -113,7 +113,7 @@ public class HoughCircles {
             getCenterPoints(maxCircles);
         drawCircles(circlespixels);
 
-        new ImagePlus("Hough Space [r=" + radiusMin + "]", newip).show(); // Shows only the hough space for the minimun radius
+//        new ImagePlus("Hough Space [r=" + radiusMin + "]", newip).show(); // Shows only the hough space for the minimun radius
         new ImagePlus(maxCircles + " Circles Found", circlesip).show();
     }
 
