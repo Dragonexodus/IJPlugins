@@ -7,6 +7,7 @@ import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import plugins.pA.HoughCircles;
 import plugins.pA.OcrString;
+import plugins.pM.ApplyResult;
 import plugins.pM.SpeedObject;
 
 import java.awt.*;
@@ -23,8 +24,8 @@ public class Street_Speed_Sign implements PlugIn {
 
     @Override
     public void run(String arg) {
-//        final String imgFile = "plugins/Project/imgs/vlcsnap-2016-05-04-14h27m18s219.png";
-        final String imgFile = "plugins/Project/imgs/vlcsnap-2016-05-04-14h26m18s343.png";
+        final String imgFile = "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png";
+//        final String imgFile = "plugins/Project/result/vlcsnap-2016-05-04-14h26m18s343.png";
 
         if (!(new File(imgFile)).exists()) {
             IJ.log("File not found: " + imgFile);
@@ -40,10 +41,12 @@ public class Street_Speed_Sign implements PlugIn {
         hc.run(imgG8.getProcessor());
         speedList = hc.getSpeedList();
 
-        imgG8.show();
+//        imgG8.show();
         checkCirkles(imgG8, speedList);
 
         checkSpeedSign(imgDup, speedList);
+
+        ApplyResult ar = new ApplyResult(speedList, imgFile);
 
         //info Testausgabe
 //        for (int i = 0; i < speedList.size(); i++)
@@ -184,16 +187,17 @@ public class Street_Speed_Sign implements PlugIn {
             ImagePlus imgNew = new ImagePlus("img", deleteRedColor(ipNew).getProcessor());
             new FileSaver(imgNew).saveAsPgm("plugins/img.pgm"); // .pgm
 
-            String speed = OcrString.getString("/home/celentano/dev/imagej1/plugins/img.png");
+            String speed = OcrString.getString("plugins/img.png");
 
             if (speed != null) {
                 //TODO regex
                 String pattern = "\\D+";
                 speed = speed.replaceAll(pattern, "");
                 if (speed.length() > 0) {
-                    if (speedSigns.contains(Integer.parseInt(speed)))
+                    if (speedSigns.contains(Integer.parseInt(speed))) {
+                        speedList.get(i).setSpeed(Integer.parseInt(speed));
                         IJ.log("speed: " + speed);
-                    else {
+                    } else {
                         speedList.remove(i);
                         i--;
                     }
@@ -211,7 +215,7 @@ public class Street_Speed_Sign implements PlugIn {
     private ImagePlus deleteRedColor(ImageProcessor ip_) {
         ImagePlus img = new ImagePlus("img", ip_);
         ImageProcessor ip = img.getProcessor();
-        Double mult = 1.5;
+        Double mult = 1.33;
 
         for (int y = 0; y < img.getHeight(); y++)
             for (int x = 0; x < img.getWidth(); x++) {
@@ -223,9 +227,9 @@ public class Street_Speed_Sign implements PlugIn {
         ic.convertToGray8();*/
 
         //Convert to Binary
-        ImagePlus binaryImage = new ImagePlus("Binary", img.getProcessor());
-        IJ.runPlugIn(binaryImage, "ij.plugin.Thresholder", "");
+        ImagePlus imgBin = new ImagePlus("Binary", img.getProcessor());
+        IJ.runPlugIn(imgBin, "ij.plugin.Thresholder", "");
 
-        return img;
+        return imgBin;
     }
 }

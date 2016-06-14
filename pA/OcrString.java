@@ -1,5 +1,7 @@
 package plugins.pA;
 
+import ij.IJ;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,15 +18,14 @@ public class OcrString {
             p.waitFor();
             if (p.getInputStream().available() > 0) {
                 res = inputStreamAsStrings(p.getInputStream());
-                /*IJ.log("gocr: " + res);
-                res = "";*/
+                IJ.log("gocr: " + res);
             }
             p.destroy();
 
             //info Dateien löschen
-            p = Runtime.getRuntime().exec("/bin/rm plugins/img.pgm");
-            p.waitFor();
-            p.destroy();
+//            p = Runtime.getRuntime().exec("/bin/rm plugins/img.pgm");
+//            p.waitFor();
+//            p.destroy();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {

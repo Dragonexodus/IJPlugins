@@ -7,7 +7,7 @@ public class RegExpTest {
     public static void main(String args[]) {
         String str = "\"50";
         String pattern = "\\D+";
-        str = str.replaceAll(pattern, "+");
+        str = str.replaceAll(pattern, "");
         System.out.println(str);
     }
 }

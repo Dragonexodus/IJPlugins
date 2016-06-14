@@ -71,6 +71,10 @@ public class SpeedObject<A> {
         return this.speed;
     }
 
+    public void setSpeed(A val) {
+        this.speed = val;
+    }
+
     public void setCenter(A xCenter, A yCenter) {
         this.xCenter = xCenter;
         this.yCenter = yCenter;
