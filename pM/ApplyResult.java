@@ -74,17 +74,22 @@ public class ApplyResult {
 
         for (SpeedObject<Integer> sO : this.speedList) {
 
-            int xBB = sO.getxCenter() - sO.getRadius();
-            int yBB = sO.getyCenter() - sO.getRadius();
-            int w = sO.getRadius() * 2;
+            int xOffset = (int) (sO.getSpeed().toString().length() * 7.5 / 2); // ein Zeichen ist ca. 7.5 pixels breit
+            int bbOffset = (int) (sO.getRadius() * 0.3); // 0.3 ist eine Abschätzung für ein Multiplikator für Schtrassenschildrand
 
-            int xOffset = (int) (sO.getSpeed().toString().length() * 7.5 / 2);
+            int xBB = sO.getxCenter() - sO.getRadius() - bbOffset;
+            int yBB = sO.getyCenter() - sO.getRadius() - bbOffset;
+            int w = (sO.getRadius() + bbOffset) * 2;
+
 
             ip.setColor(new Color(200, 0, 0));
             Color background = new Color(0, 0, 0);
             ip.drawRect(xBB, yBB, w, w);
             ip.setColor(new Color(255, 255, 255));
-            ip.drawString(sO.getSpeed().toString(), sO.getxCenter() - xOffset, sO.getyCenter() + sO.getRadius() + sO.getOffset() + yOffset,
+            ip.drawString(
+                    sO.getSpeed().toString(),
+                    sO.getxCenter() - xOffset,
+                    sO.getyCenter() + sO.getRadius() + yOffset + bbOffset,
                     background);
 
             xml.addObject(sO.getSpeed(), xBB, yBB, w, w);
