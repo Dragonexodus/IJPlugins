@@ -1,6 +1,6 @@
 \input{Header}						
 
-\title{Nutzerhandbuch}
+\title{Nutzerhandbuch:  Höchstgeschwindigkeitsschilder}
 \subtitle{Projekt 8 - Digitale Bildverarbeitung}
 
 \author{Andrej Lisnitzki,, Michael Horn\vspace{4cm}}
@@ -8,9 +8,56 @@
 \begin{document}
 \maketitle
 
-%TODO was soll hier rein?
-\section{Einleitung}
-%TODO
-\section{Verwendung}
-%TODO Wie aufrufen -> kommandozeile, Parameter... usw
+\section{Allgemeines}
+In diesem Projekt war es das Ziel mit Hilfe von ImageJ eine Erkennung von Höchstgeschwindigkeitsschildern zu implementieren.
+Die Implementierung erfolgte als ausführbares ImageJ-Plugin.
+
+Zur Erkennung von Schildern wird zunächst ein Farberkennung realisiert und im Anschluss mit einer Hough-Transformation nach Kreisen gesucht.
+Gefundene Kreise werden im nächsten Schritt durch eine OCR-Anwendung analysiert.
+Werden dabei gültige Geschwindigkeitsinformationen geliefert, so wird das Schild als Höchstgeschwindigkeitsschild erkannt und entsprechend markiert.
+
+Damit die Erkennung der Geschwindigkeitsschilder funktioniert, wird GOCR\footnote{\url{http://jocr.sourceforge.net/}} als ausführbare OCR-Anwendung benötigt.
+Diese Anwendung muss in dem entsprechendem Ordner des Plugins hinterlegt sein.
+Weiterhin muss diese Binärdatei ausführbar sein (Executiable Flag gesetzt).
+
+Ergebnisse werden im Ordner der Eingangsdatei gespeichert.
+
+\section{Voraussetzungen}
+ImageJ muss mindestens mit der Java Version 7 arbeiten und der Compiler muss auf 1.7 gestellt werden!
+Ältere Versionen werden nicht unterstützt!
+
+GOCR muss im entsprechenden Unterordner des Plugins ausführbar sein.
+
+\pagebreak
+\section{Parameter}
+Folgende Parameter werden benötigt, damit die Erkennung funktioniert\footnote{\textbf{Achtung:} Derzeit erfolgt keine Überprüfung der Eingangswerte auf Korrektheit!}
+\begin{itemize}
+	\item Pfad zur Bilddatei
+	\begin{itemize}
+		\item filepath=plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png
+	\end{itemize}
+	\end{itemize}
+HoughCircle-Parameter:
+\begin{itemize}
+	\item Kleinster Radius des zu erkennenden Kreises
+	\begin{itemize}
+		 \item MinimumRadius=10
+	\end{itemize}
+	\item Größter Radius des zu erkennenden Kreises
+	\begin{itemize}
+		\item MaximumRadius=50
+	\end{itemize}
+	\item Schrittweite der Radiuserhöhung bei der Erkennung
+	\begin{itemize}
+		\item IncrementRadius=2
+	\end{itemize}
+	\item Anzahl der zu erkennenden Kreise
+	\begin{itemize}
+		\item NumberOfCircles=6
+	\end{itemize}
+	\item Anzahl der Treffer, damit der Kreis erkannt wird (0 <= 8), es werden Senkrechte, Vertikale und Diagonale Punkte verwendet um einen Kreis zu definieren
+	\begin{itemize}
+		\item Hits=6
+	\end{itemize}
+\end{itemize}
 \end{document}
