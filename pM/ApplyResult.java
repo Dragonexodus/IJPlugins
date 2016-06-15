@@ -53,7 +53,6 @@ public class ApplyResult {
             return;
         }
         if (this.speedList.isEmpty() || this.speedList.get(0) == null) {
-            IJ.log("SpeedObject is empty\\null");
             return;
         }
 
