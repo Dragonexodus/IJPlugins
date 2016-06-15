@@ -20,246 +20,263 @@ import java.util.ArrayList;
  */
 public class Street_Speed_Sign implements PlugIn {
 
-    private static Integer imgCounter = 0;
-    public Integer radiusMin;   // Find circles with radius grater or equal radiusMin
-    public Integer radiusMax;   // Find circles with radius less or equal radiusMax
-    public Integer radiusInc;   // Increment used to go from radiusMin to radiusMax
-    public Integer maxCircles;  // Numbers of circles to be found
-    private ArrayList<SpeedObject<Integer>> speedList;
+	private static Integer imgCounter = 0;
+	private ArrayList<SpeedObject<Integer>> speedList;
+	private int hit;
+	@Override
+	public void run(String arg) {
+//TODO ACHTUNG: GOCR Pfad ist seltsam genauso wie plugins/img.png -PFAD
+		// GenericDialog -------------------------------------------------------
+		GenericDialog gd = new GenericDialog("Street Speed Sign", IJ.getInstance());
+		//gd.addStringField("Filepath", "/home/dragonexodus/Digitalebilderverarbeitung/Projekt/7.png",50);
+		gd.addStringField("Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png",50);
+		gd.addNumericField("Minimum radius: ", 10, 0);
+		gd.addNumericField("Maximum radius: ", 50, 0);
+		gd.addNumericField("Increment radius: ", 2, 0);
+		gd.addNumericField("Number of circles", 6, 0);
+		gd.addNumericField("Hits to detect circle", 6, 0);
+		
+		// gd.addStringField("Minimum radius (in pixels) :",
+		// "rmin=10 rmax=50 rinc=2 cnum=6 path=plugins/Project/result match=6");
 
-    @Override
-    public void run(String arg) {
+		gd.showDialog();
+		if (gd.wasCanceled())
+			return;
 
-        // GenericDialog -------------------------------------------------------
-        GenericDialog gd = new GenericDialog("SSS", IJ.getInstance());
+		String imgFile = gd.getNextString();
+		int radiusMin = (int) gd.getNextNumber();
+		int radiusMax = (int) gd.getNextNumber();
+		int radiusInc = (int) gd.getNextNumber();
+		int maxCircles = (int) gd.getNextNumber();
+		hit = (int) gd.getNextNumber();
+		
+		/*
+		 * String[] sList = str.split(" "); if (sList.length < 6) { IJ.log(
+		 * "error: missing some arguments!"); return; }
+		 */
 
-        gd.addStringField("Minimum radius (in pixels) :",
-                "rmin=10 rmax=50 rinc=2 cnum=6 path=plugins/Project/result match=6");
+		/*
+		 * radiusMin = Integer.parseInt(sList[0].split("=")[1]); radiusMax =
+		 * Integer.parseInt(sList[1].split("=")[1]); radiusInc =
+		 * Integer.parseInt(sList[2].split("=")[1]); maxCircles =
+		 * Integer.parseInt(sList[3].split("=")[1]);
+		 */
 
-        gd.showDialog();
-        if (gd.wasCanceled())
-            return;
+		// ---------------------------------------------------------------------
 
-        String str = gd.getNextString();
-        String[] sList = str.split(" ");
-        if (sList.length < 6) {
-            IJ.log("error: missing some arguments!");
-            return;
-        }
+		// imgFile =
+		// "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png";
+		// imgFile =
+		// "plugins/Project/result/vlcsnap-2016-05-04-14h26m18s343.png";
 
-        radiusMin = Integer.parseInt(sList[0].split("=")[1]);
-        radiusMax = Integer.parseInt(sList[1].split("=")[1]);
-        radiusInc = Integer.parseInt(sList[2].split("=")[1]);
-        maxCircles = Integer.parseInt(sList[3].split("=")[1]);
-        IJ.log("rMin: " + radiusMin);
-        // ---------------------------------------------------------------------
+		if (!(new File(imgFile)).exists()) {
+			IJ.log("File not found: " + imgFile);
+			return;
+		}
 
-        final String imgFile = "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png";
-//        final String imgFile = "plugins/Project/result/vlcsnap-2016-05-04-14h26m18s343.png";
+		ImagePlus imgOrigin = new ImagePlus(imgFile);
+		ImagePlus imgDup = imgOrigin.duplicate();
+		ImagePlus imgG8 = getRedRegionsImg(imgDup);
 
-        if (!(new File(imgFile)).exists()) {
-            IJ.log("File not found: " + imgFile);
-            return;
-        }
+		HoughCircles hc = new HoughCircles();
+		hc.setParameters(radiusMin, radiusMax , radiusInc, maxCircles, 50);
+		hc.run(imgG8.getProcessor());
+		speedList = hc.getSpeedList();
 
-        ImagePlus imgOrigin = new ImagePlus(imgFile);
-        ImagePlus imgDup = imgOrigin.duplicate();
-        ImagePlus imgG8 = getRedRegionsImg(imgDup);
+		// imgG8.show();
+		checkCirkles(imgG8, speedList);
 
-        HoughCircles hc = new HoughCircles();
-        hc.setParameters(10, 50, 2, 4, 50);
-        hc.run(imgG8.getProcessor());
-        speedList = hc.getSpeedList();
+		checkSpeedSign(imgDup, speedList);
 
-//        imgG8.show();
-        checkCirkles(imgG8, speedList);
+		ApplyResult ar = new ApplyResult(speedList, imgFile);
 
-        checkSpeedSign(imgDup, speedList);
+		// info Testausgabe
+		// for (int i = 0; i < speedList.size(); i++)
+		// IJ.log("point: " + speedList.get(i).getxCenter() + "," +
+		// speedList.get(i).getyCenter() + " radius: " +
+		// speedList.get(i).getRadius());
+	}
 
-        ApplyResult ar = new ApplyResult(speedList, imgFile);
+	private ImagePlus getRedRegionsImg(ImagePlus img) {
+		Integer w = img.getWidth();
+		Integer h = img.getHeight();
+		ByteProcessor ip = new ByteProcessor(w, h);
 
-        //info Testausgabe
-//        for (int i = 0; i < speedList.size(); i++)
-//            IJ.log("point: " + speedList.get(i).getxCenter() + "," + speedList.get(i).getyCenter() + " radius: " + speedList.get(i).getRadius());
-    }
+		Double mult = 2.0;
 
-    private ImagePlus getRedRegionsImg(ImagePlus img) {
-        Integer w = img.getWidth();
-        Integer h = img.getHeight();
-        ByteProcessor ip = new ByteProcessor(w, h);
+		for (int y = 0; y < h; y++)
+			for (int x = 0; x < w; x++) {
+				int[] color = img.getPixel(x, y);
+				if (color[0] > 0 && color[0] > mult * color[1] && color[0] > mult * color[2])
+					ip.putPixel(x, y, 255);
+			}
+		imgCounter++;
+		return new ImagePlus("img_" + imgCounter.toString(), ip);
+	}
 
-        Double mult = 2.0;
+	private void checkCirkles(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
 
-        for (int y = 0; y < h; y++)
-            for (int x = 0; x < w; x++) {
-                int[] color = img.getPixel(x, y);
-                if (color[0] > 0 && color[0] > mult * color[1] && color[0] > mult * color[2])
-                    ip.putPixel(x, y, 255);
-            }
-        imgCounter++;
-        return new ImagePlus("img_" + imgCounter.toString(), ip);
-    }
+		// info Testausgabe
+		boolean printTest = false;
+		ImagePlus imgRgb = img.duplicate();
+		ImageConverter ic = new ImageConverter(imgRgb);
+		ic.convertToRGB();
+		ImageProcessor ipRgb = imgRgb.getProcessor();
+		ipRgb.setColor(255); // blue
+		if (printTest)
+			imgRgb.show();
 
-    private void checkCirkles(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
+		ImageProcessor ipG8 = img.getProcessor();
 
-        //info Testausgabe
-        boolean printTest = true;
-        ImagePlus imgRgb = img.duplicate();
-        ImageConverter ic = new ImageConverter(imgRgb);
-        ic.convertToRGB();
-        ImageProcessor ipRgb = imgRgb.getProcessor();
-        ipRgb.setColor(255);    // blue
-        if (printTest)
-            imgRgb.show();
+		for (int i = 0; i < speedList.size(); i++) {
+			Integer treffer = 0;
+			Integer x = speedList.get(i).getxCenter();
+			Integer y = speedList.get(i).getyCenter();
+			Integer radius = speedList.get(i).getRadius();
+			ArrayList<Point> points = new ArrayList<Point>();
+			Double diagonalPixelMultiplier = 1.0 / Math.sqrt(2.0); // 0.7071
+			Integer centerOffset = (int) (Math.sin(45.0) * radius * 0.86); // 0.86
 
-        ImageProcessor ipG8 = img.getProcessor();
+			// unten
+			Point p = new Point(x, y + radius);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-        for (int i = 0; i < speedList.size(); i++) {
-            Integer treffer = 0;
-            Integer x = speedList.get(i).getxCenter();
-            Integer y = speedList.get(i).getyCenter();
-            Integer radius = speedList.get(i).getRadius();
-            ArrayList<Point> points = new ArrayList<Point>();
-            Double diagonalPixelMultiplier = 1.0 / Math.sqrt(2.0);          // 0.7071
-            Integer centerOffset = (int) (Math.sin(45.0) * radius * 0.86);  // 0.86
+			// unten-rechts
+			p = new Point(x + centerOffset, y + centerOffset);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-            // unten
-            Point p = new Point(x, y + radius);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			// rechts
+			p = new Point(x + radius, y);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-            // unten-rechts
-            p = new Point(x + centerOffset, y + centerOffset);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			// rechts-oben
+			p = new Point(x + centerOffset, y - centerOffset);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-            // rechts
-            p = new Point(x + radius, y);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			// oben
+			p = new Point(x, y - radius);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-            // rechts-oben
-            p = new Point(x + centerOffset, y - centerOffset);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			// oben-links
+			p = new Point(x - centerOffset, y - centerOffset);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-            // oben
-            p = new Point(x, y - radius);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			// links
+			p = new Point(x - radius, y);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-            // oben-links
-            p = new Point(x - centerOffset, y - centerOffset);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			// lnks-unten
+			p = new Point(x - centerOffset, y + centerOffset);
+			if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
+				treffer++;
+			points.add(p);
 
-            // links
-            p = new Point(x - radius, y);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			// info Testausgabe
+			if (printTest) {
+				for (int j = 0; j < points.size(); j++)
+					ipRgb.drawLine(x, y, (int) points.get(j).getX(), (int) points.get(j).getY());
+				imgRgb.updateAndDraw();
+			}
 
-            // lnks-unten
-            p = new Point(x - centerOffset, y + centerOffset);
-            if (ipG8.getPixel((int) p.getX(), (int) p.getY()) == 255)
-                treffer++;
-            points.add(p);
+			if (treffer >= hit)
+				IJ.log("point: " + x + "," + y + " radius:" + radius);
+			else {
+				speedList.remove(i);
+				i--;
+			}
+		}
+	}
 
-            //info Testausgabe
-            if (printTest) {
-                for (int j = 0; j < points.size(); j++)
-                    ipRgb.drawLine(x, y, (int) points.get(j).getX(), (int) points.get(j).getY());
-                imgRgb.updateAndDraw();
-            }
+	private void checkSpeedSign(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
 
-            if (treffer >= 6)
-                IJ.log("point: " + x + "," + y + " radius:" + radius);
-            else {
-                speedList.remove(i);
-                i--;
-            }
-        }
-    }
+		ArrayList<Integer> speedSigns = new ArrayList<Integer>();
+		speedSigns.add(5);
+		speedSigns.add(10);
+		speedSigns.add(20);
+		speedSigns.add(30);
+		speedSigns.add(40);
+		speedSigns.add(50);
+		speedSigns.add(60);
+		speedSigns.add(80);
+		speedSigns.add(90);
+		speedSigns.add(100);
+		speedSigns.add(110);
+		speedSigns.add(120);
+		speedSigns.add(130);
 
-    private void checkSpeedSign(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
+		for (int i = 0; i < speedList.size(); i++) {
+			Integer x = speedList.get(i).getxCenter();
+			Integer y = speedList.get(i).getyCenter();
+			Integer radius = speedList.get(i).getRadius();
+			Double diagonalPixelMultiplier = 1.0 / Math.sqrt(2.0); // 0.7071
+			Integer centerOffset = (int) (Math.sin(45.0) * radius * 0.86); // 0.86
 
-        ArrayList<Integer> speedSigns = new ArrayList<Integer>();
-        speedSigns.add(5);
-        speedSigns.add(10);
-        speedSigns.add(20);
-        speedSigns.add(30);
-        speedSigns.add(40);
-        speedSigns.add(50);
-        speedSigns.add(60);
-        speedSigns.add(80);
-        speedSigns.add(90);
-        speedSigns.add(100);
-        speedSigns.add(110);
-        speedSigns.add(120);
-        speedSigns.add(130);
+			ImageProcessor ip = img.duplicate().getProcessor();
+			ip.setRoi(x - centerOffset, y - centerOffset, centerOffset * 2, centerOffset * 2);
+			ImageProcessor ipNew = ip.crop();
+			ImagePlus imgNew = new ImagePlus("img", deleteRedColor(ipNew).getProcessor());
+			imgNew.getProcessor().dilate();
+			//TODO KOMISCHEN Pfad ÄNDERN
+			new FileSaver(imgNew).saveAsPgm("plugins/img.pgm"); 
 
-        for (int i = 0; i < speedList.size(); i++) {
-            Integer x = speedList.get(i).getxCenter();
-            Integer y = speedList.get(i).getyCenter();
-            Integer radius = speedList.get(i).getRadius();
-            Double diagonalPixelMultiplier = 1.0 / Math.sqrt(2.0);          // 0.7071
-            Integer centerOffset = (int) (Math.sin(45.0) * radius * 0.86);  // 0.86
+			String speed = OcrString.getString("plugins/img.png");
 
-            ImageProcessor ip = img.duplicate().getProcessor();
-            ip.setRoi(x - centerOffset, y - centerOffset, centerOffset * 2, centerOffset * 2);
-            ImageProcessor ipNew = ip.crop();
-            ImagePlus imgNew = new ImagePlus("img", deleteRedColor(ipNew).getProcessor());
-            new FileSaver(imgNew).saveAsPgm("plugins/img.pgm"); // .pgm
+			if (speed != null) {
+				// TODO regex
+				String pattern = "\\D+";
+				speed = speed.replaceAll(pattern, "");
+				if (speed.length() > 0) {
+					if (speedSigns.contains(Integer.parseInt(speed))) {
+						speedList.get(i).setSpeed(Integer.parseInt(speed));
+						IJ.log("speed: " + speed);
+					} else {
+						speedList.remove(i);
+						i--;
+					}
+				} else {
+					speedList.remove(i);
+					i--;
+				}
+			} else {
+				speedList.remove(i);
+				i--;
+			}
+		}
+	}
 
-            String speed = OcrString.getString("plugins/img.png");
+	private ImagePlus deleteRedColor(ImageProcessor ip_) {
+		ImagePlus img = new ImagePlus("img", ip_);
+		ImageProcessor ip = img.getProcessor();
+		Double mult = 1.33;
 
-            if (speed != null) {
-                //TODO regex
-                String pattern = "\\D+";
-                speed = speed.replaceAll(pattern, "");
-                if (speed.length() > 0) {
-                    if (speedSigns.contains(Integer.parseInt(speed))) {
-                        speedList.get(i).setSpeed(Integer.parseInt(speed));
-                        IJ.log("speed: " + speed);
-                    } else {
-                        speedList.remove(i);
-                        i--;
-                    }
-                } else {
-                    speedList.remove(i);
-                    i--;
-                }
-            } else {
-                speedList.remove(i);
-                i--;
-            }
-        }
-    }
+		for (int y = 0; y < img.getHeight(); y++)
+			for (int x = 0; x < img.getWidth(); x++) {
+				int[] color = img.getPixel(x, y);
+				if (color[0] > 0 && color[0] > mult * color[1] && color[0] > mult * color[2])
+					ip.putPixel(x, y, Integer.MAX_VALUE);
+			}
+		/*
+		 * ImageConverter ic = new ImageConverter(img); ic.convertToGray8();
+		 */
 
-    private ImagePlus deleteRedColor(ImageProcessor ip_) {
-        ImagePlus img = new ImagePlus("img", ip_);
-        ImageProcessor ip = img.getProcessor();
-        Double mult = 1.33;
+		// Convert to Binary
+		ImagePlus imgBin = new ImagePlus("Binary", img.getProcessor());
+		IJ.runPlugIn(imgBin, "ij.plugin.Thresholder", "");
 
-        for (int y = 0; y < img.getHeight(); y++)
-            for (int x = 0; x < img.getWidth(); x++) {
-                int[] color = img.getPixel(x, y);
-                if (color[0] > 0 && color[0] > mult * color[1] && color[0] > mult * color[2])
-                    ip.putPixel(x, y, Integer.MAX_VALUE);
-            }
-        /*ImageConverter ic = new ImageConverter(img);
-        ic.convertToGray8();*/
-
-        //Convert to Binary
-        ImagePlus imgBin = new ImagePlus("Binary", img.getProcessor());
-        IJ.runPlugIn(imgBin, "ij.plugin.Thresholder", "");
-
-        return imgBin;
-    }
+		return imgBin;
+	}
 }
