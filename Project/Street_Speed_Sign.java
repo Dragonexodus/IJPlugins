@@ -159,7 +159,7 @@ public class Street_Speed_Sign implements PlugIn {
 
     private void checkSpeedSign(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
 
-        ArrayList<Integer> speedSigns = new ArrayList<>();
+        ArrayList<Integer> speedSigns = new ArrayList<Integer>();
         speedSigns.add(5);
         speedSigns.add(10);
         speedSigns.add(20);

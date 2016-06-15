@@ -1,15 +1,10 @@
-import java.awt.*;
-import java.awt.image.ImageFilter;
-import java.io.File;
-import java.lang.reflect.GenericArrayType;
-
-import ij.*;
-import ij.gui.*;
-import ij.io.FileInfo;
-import ij.process.*;
-import ij.plugin.Commands;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+import plugins.Stuff.Coordinates;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -241,7 +236,7 @@ public class Speed_Detection implements PlugIn {
 	 *         false
 	 */
 	private List<Coordinates<Integer>> findLines(ImageProcessor ip, boolean isHorizontal) {
-		List<Coordinates<Integer>> posList = new ArrayList<>();
+		List<Coordinates<Integer>> posList = new ArrayList<Coordinates<Integer>>();
 		int h = ip.getHeight();
 		int w = ip.getWidth();
 
@@ -270,7 +265,7 @@ public class Speed_Detection implements PlugIn {
 							tempCord.swap();
 
 						posList.add(tempCord);
-						tempCord = new Coordinates<>();
+						tempCord = new Coordinates<Integer>();
 					}
 					tempCord.setStart(x, y);
 					foundSth = true;

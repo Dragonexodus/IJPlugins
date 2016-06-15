@@ -18,9 +18,6 @@ package plugins.pA; /**
  * Mark A. Schulze applet (http://www.markschulze.net/)
  */
 
-//package sigus.templateMatching;
-//import sigus.*;
-
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;

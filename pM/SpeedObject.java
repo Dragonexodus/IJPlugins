@@ -20,7 +20,6 @@ public class SpeedObject<A> {
         this.radius = radius;
         this.offsetRadius = offsetRadius;
         this.speed = speed;
-
     }
 
     public SpeedObject() {

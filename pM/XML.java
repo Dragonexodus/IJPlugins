@@ -42,7 +42,7 @@ public class XML {
 	 */
 	public XML(Integer speed, Integer x, Integer y, Integer widht, Integer height) {
 		super();
-		object = new ArrayList<>();
+		object = new ArrayList<Integer>();
 		addObject(speed, x, y, widht, height);
 		objectSize = object.size(); // Size of one object
 	}
@@ -70,7 +70,7 @@ public class XML {
 			object.add(widht);
 			object.add(height);
 		} else {
-			object = new ArrayList<>();
+			object = new ArrayList<Integer>();
 			addObject(speed, x, y, widht, height);
 			objectSize = object.size();
 		}

@@ -9,9 +9,9 @@ public class ApplyResultTest {
 
 	@Test
 	public void testApplyResult() {
-		List<SpeedObject<Integer>> list = new ArrayList<>();
-		SpeedObject<Integer> a = new SpeedObject<>(100,100,10,10,60);
-		SpeedObject<Integer> b = new SpeedObject<>(500,500,200,10,50);
+		List<SpeedObject<Integer>> list = new ArrayList<SpeedObject<Integer>>();
+		SpeedObject<Integer> a = new SpeedObject<Integer>(100,100,10,10,60);
+		SpeedObject<Integer> b = new SpeedObject<Integer>(500,500,200,10,50);
 		
 
 		list.add(b);
@@ -28,7 +28,7 @@ public class ApplyResultTest {
 	}
 	@Test
 	public void testApplyResultEmpty_2(){
-		List<SpeedObject<Integer>> list = new ArrayList<>();
+		List<SpeedObject<Integer>> list = new ArrayList<SpeedObject<Integer>>();
 		ApplyResult applyResult = new ApplyResult(list, null,null);
 	}
 }
