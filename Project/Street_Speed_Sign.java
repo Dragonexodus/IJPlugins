@@ -1,5 +1,6 @@
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.io.FileSaver;
 import ij.plugin.PlugIn;
 import ij.process.ByteProcessor;
@@ -20,10 +21,34 @@ import java.util.ArrayList;
 public class Street_Speed_Sign implements PlugIn {
 
     private static Integer imgCounter = 0;
+    public Integer radiusMin;   // Find circles with radius grater or equal radiusMin
+    public Integer radiusMax;   // Find circles with radius less or equal radiusMax
+    public Integer radiusInc;   // Increment used to go from radiusMin to radiusMax
+    public Integer maxCircles;  // Numbers of circles to be found
     private ArrayList<SpeedObject<Integer>> speedList;
 
     @Override
     public void run(String arg) {
+
+        // GenericDialog -------------------------------------------------------
+        GenericDialog gd = new GenericDialog("SSS", IJ.getInstance());
+
+        gd.addNumericField("Minimum radius (in pixels) :", 5, 0);
+        gd.addNumericField("Maximum radius (in pixels)", 50, 0);
+        gd.addNumericField("Increment radius (in pixels) :", 2, 0);
+        gd.addNumericField("Number of Circles (NC): (enter 0 if using threshold)", 6, 0);
+
+        gd.showDialog();
+        if (gd.wasCanceled())
+            return;
+
+        radiusMin = (int) gd.getNextNumber();
+        radiusMax = (int) gd.getNextNumber();
+        radiusInc = (int) gd.getNextNumber();
+        maxCircles = (int) gd.getNextNumber();
+        IJ.log("rMin: " + radiusMin);
+        // ---------------------------------------------------------------------
+
         final String imgFile = "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png";
 //        final String imgFile = "plugins/Project/result/vlcsnap-2016-05-04-14h26m18s343.png";
 
