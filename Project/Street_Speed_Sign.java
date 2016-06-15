@@ -33,19 +33,24 @@ public class Street_Speed_Sign implements PlugIn {
         // GenericDialog -------------------------------------------------------
         GenericDialog gd = new GenericDialog("SSS", IJ.getInstance());
 
-        gd.addNumericField("Minimum radius (in pixels) :", 5, 0);
-        gd.addNumericField("Maximum radius (in pixels)", 50, 0);
-        gd.addNumericField("Increment radius (in pixels) :", 2, 0);
-        gd.addNumericField("Number of Circles (NC): (enter 0 if using threshold)", 6, 0);
+        gd.addStringField("Minimum radius (in pixels) :",
+                "rmin=10 rmax=50 rinc=2 cnum=6 path=plugins/Project/result match=6");
 
         gd.showDialog();
         if (gd.wasCanceled())
             return;
 
-        radiusMin = (int) gd.getNextNumber();
-        radiusMax = (int) gd.getNextNumber();
-        radiusInc = (int) gd.getNextNumber();
-        maxCircles = (int) gd.getNextNumber();
+        String str = gd.getNextString();
+        String[] sList = str.split(" ");
+        if (sList.length < 6) {
+            IJ.log("error: missing some arguments!");
+            return;
+        }
+
+        radiusMin = Integer.parseInt(sList[0].split("=")[1]);
+        radiusMax = Integer.parseInt(sList[1].split("=")[1]);
+        radiusInc = Integer.parseInt(sList[2].split("=")[1]);
+        maxCircles = Integer.parseInt(sList[3].split("=")[1]);
         IJ.log("rMin: " + radiusMin);
         // ---------------------------------------------------------------------
 
