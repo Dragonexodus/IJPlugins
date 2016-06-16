@@ -177,8 +177,8 @@ public class Street_Speed_Sign implements PlugIn {
                 imgRgb.updateAndDraw();
             }
 
-            if (treffer >= hit)
-                IJ.log("point: " + x + "," + y + " radius:" + radius);
+            if (treffer >= hit);
+//                IJ.log("point: " + x + "," + y + " radius:" + radius);
             else {
                 speedList.remove(i);
                 i--;
@@ -229,7 +229,7 @@ public class Street_Speed_Sign implements PlugIn {
                 if (speed.length() > 0) {
                     if (speedSigns.contains(Integer.parseInt(speed))) {
                         speedList.get(i).setSpeed(Integer.parseInt(speed));
-                        IJ.log("speed: " + speed);
+//                        IJ.log("speed: " + speed);
                     } else {
                         speedList.remove(i);
                         i--;

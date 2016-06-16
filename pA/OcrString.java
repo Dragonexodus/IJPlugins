@@ -1,7 +1,5 @@
 package plugins.pA;
 
-import ij.IJ;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +16,7 @@ public class OcrString {
             p.waitFor();
             if (p.getInputStream().available() > 0) {
                 res = inputStreamAsStrings(p.getInputStream());
-                IJ.log("gocr: " + res);
+//                IJ.log("gocr: " + res);
             }
             p.destroy();
 
