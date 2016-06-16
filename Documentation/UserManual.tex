@@ -16,48 +16,94 @@ Zur Erkennung von Schildern wird zunächst ein Farberkennung realisiert und im A
 Gefundene Kreise werden im nächsten Schritt durch eine OCR-Anwendung analysiert.
 Werden dabei gültige Geschwindigkeitsinformationen geliefert, so wird das Schild als Höchstgeschwindigkeitsschild erkannt und entsprechend markiert.
 
-Damit die Erkennung der Geschwindigkeitsschilder funktioniert, wird GOCR\footnote{\url{http://jocr.sourceforge.net/}} als ausführbare OCR-Anwendung benötigt.
+Damit die Erkennung der Geschwindigkeitsschilder funktioniert, wird GOCR\footnote{\url{http://jocr.sourceforge.net/} Stand: \today} als ausführbare OCR-Anwendung benötigt.
 Diese Anwendung muss in dem entsprechendem Ordner des Plugins hinterlegt sein.
-Weiterhin muss diese Binärdatei ausführbar sein (Executiable Flag gesetzt).
+Weiterhin muss diese Binärdatei ausführbar sein (Executable Flag gesetzt).
 
 Ergebnisse werden im Ordner der Eingangsdatei gespeichert.
 
+\pagebreak
 \section{Voraussetzungen}
-ImageJ muss mindestens mit der Java Version 7 arbeiten und der Compiler muss auf 1.7 gestellt werden!
+ImageJ muss mindestens mit der Java Version 7 arbeiten und der Compiler von ImageJ muss auf 1.7 gestellt werden!
 Ältere Versionen werden nicht unterstützt!
 
 GOCR muss im entsprechenden Unterordner des Plugins ausführbar sein.
 
+\section{Ablauf}
+Das ImageJ-Plugin arbeitet wie folgt:
+
+\paragraph*{}
+Als erstes erfolgt eine Farbdetektion des Schildes.
+Jedes Höchstgeschwindigkeitsschild besitzt einen roten Kreis.
+Im ersten Schritt werden rote Punkte durch die Farbe Weiß ersetzt und alle andere Farben auf Schwarz.
+Dadurch wird der Hintergrund Schwarz und relevante Punkte Weiß.
+
+\paragraph*{}
+Im nächsten Schritt wird eine Hough-Transformation für Kreise durchgeführt.
+Der verwendete Quellcode für die Hough-Transforation stammt von \url{https://imagej.nih.gov/ij/plugins/hough-circles.html} (Stand: \today).
+Diese Transformation sucht nach Mittelpunkten von potenziellen Kreise.
+Damit die Suche erfolgreich ist müssen für die Transformation verschiedene Parameter angegeben werden.
+Zum einen Parameter über den minimalen und maximalen Radius des Kreises der erkannt werden soll sowie die Größe der Iterationsschritte vom kleinsten zum größten Radius.
+Ebenfalls angegeben werden muss die maximale Anzahl an Kreisen die gefunden werden soll. 
+
+\paragraph*{}
+Nachdem Kreismittelpunkte durch die Hough-Transformation gefunden wurde wird überprüft ob die gefunden Kreismittelpunkte wirklich einen Kreis beschreiben.
+Dazu werden die Abstände vom Kreismittelpunkt zum Rand kontrolliert.
+Die Kontrolle erfolgt vertikal, horizontal und diagonal, sodass maximal 8 mögliche Übereinstimmungen für einen Kreis gefunden werden können.
+Über den Parameter Hit wird der Grenzwert an Position festgelegt, damit der Kreis als Kreis erkannt wird.
+
+\paragraph*{}
+Nachdem nun potenzielle Kandidaten für Höchstgeschwindigkeitsschilder gefunden wurden, werden bestimmte Bereiche aus dem Originalbild kopiert.
+Aus den Bereichen wird die Farbe rot entfernt und anschließend eine Binarisierung durchgeführt.
+Im Anschluss wird das Bild gespeichert und an die externe GOCR-Anwendung übergeben.
+Diese Überprüft das Bild auf Text und gibt einen String von Text zurück.
+Über Patternmatching wird anschließend geprüft ob eine Geschwindigkeit im Schild steht oder nicht.
+
+\paragraph*{}
+Falls ein Geschwindigkeitsschild gefunden wurde, so wird eine rote BoundingBox um das Schild gezeichnet und die erkannte Geschwindigkeit unter das Schild geschrieben.
+Sollte keine Geschwindigkeit erkannt werden, so erfolgt keine Hervorhebung des Schildes!
+Das Ergebnisbild wird als \qq{\_RSD.png} im Quellordner gespeichert.
+Zusätzlich wird in diesen Ordner die Ergebnis-XML gespeichert.
+Die Speicherung von Ergebnissen erfolgt nur wenn Geschwindigkeitsschilder vollständig erkannt wurden.
+
 \pagebreak
-\section{Parameter}
-Folgende Parameter werden benötigt, damit die Erkennung funktioniert\footnote{\textbf{Achtung:} Derzeit erfolgt keine Überprüfung der Eingangswerte auf Korrektheit!}
+\section{Aufruf}
+Aufruf per Kommandozeile:
+
+\begin{small}
+\textbf{./ImageJ -eval "run('Street Speed Sign', 'i=plugins/Project/result/test.png rmin=10 rmax=50 rinc=2 cnum=6 hits=6');"}
+\end{small}
+
+Folgende Parameter werden benötigt, damit die Erkennung funktioniert:\footnote{\textbf{Achtung:} Derzeit erfolgt keine Überprüfung der Eingangswerte auf Korrektheit!}
+
+
 \begin{itemize}
 	\item Pfad zur Bilddatei
 	\begin{itemize}
-		\item filepath=plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png
+		\item i=plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png
 	\end{itemize}
 	\end{itemize}
 HoughCircle-Parameter:
 \begin{itemize}
 	\item Kleinster Radius des zu erkennenden Kreises
 	\begin{itemize}
-		 \item MinimumRadius=10
+		 \item rmin=10
 	\end{itemize}
 	\item Größter Radius des zu erkennenden Kreises
 	\begin{itemize}
-		\item MaximumRadius=50
+		\item rmax=50
 	\end{itemize}
 	\item Schrittweite der Radiuserhöhung bei der Erkennung
 	\begin{itemize}
-		\item IncrementRadius=2
+		\item rinc=2
 	\end{itemize}
 	\item Anzahl der zu erkennenden Kreise
 	\begin{itemize}
-		\item NumberOfCircles=6
+		\item cnum=6
 	\end{itemize}
 	\item Anzahl der Treffer, damit der Kreis erkannt wird (0 <= 8), es werden Senkrechte, Vertikale und Diagonale Punkte verwendet um einen Kreis zu definieren
 	\begin{itemize}
-		\item Hits=6
+		\item hits=6
 	\end{itemize}
 \end{itemize}
 \end{document}
