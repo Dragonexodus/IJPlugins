@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class Street_Speed_Sign implements PlugIn {
 
     private static Integer imgCounter = 0;
+    private static String imgFile;
     private ArrayList<SpeedObject<Integer>> speedList;
     private int hit;
 
@@ -30,23 +31,23 @@ public class Street_Speed_Sign implements PlugIn {
         // GenericDialog -------------------------------------------------------
         GenericDialog gd = new GenericDialog("Street Speed Sign", IJ.getInstance());
         //gd.addStringField("Filepath", "/home/dragonexodus/Digitalebilderverarbeitung/Projekt/7.png",50);
-        gd.addStringField("Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png", 50);
-        gd.addNumericField("Minimum radius: ", 10, 0);
-        gd.addNumericField("Maximum radius: ", 50, 0);
-        gd.addNumericField("Increment radius: ", 2, 0);
-        gd.addNumericField("Number of circles", 6, 0);
-        gd.addNumericField("Hits to detect circle", 6, 0);
+        gd.addStringField("Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png");
+        gd.addStringField("Minimum radius: ", "10");
+        gd.addStringField("Maximum radius: ", "50");
+        gd.addStringField("Increment radius: ", "2");
+        gd.addStringField("Number of circles", "6");
+        gd.addStringField("Hits to detect circle", "6");
 
         gd.showDialog();
         if (gd.wasCanceled())
             return;
 
-        String imgFile = gd.getNextString();
-        int radiusMin = (int) gd.getNextNumber();
-        int radiusMax = (int) gd.getNextNumber();
-        int radiusInc = (int) gd.getNextNumber();
-        int maxCircles = (int) gd.getNextNumber();
-        hit = (int) gd.getNextNumber();
+        imgFile = gd.getNextString();
+        int radiusMin = Integer.parseInt(gd.getNextString());
+        int radiusMax = Integer.parseInt(gd.getNextString());
+        int radiusInc = Integer.parseInt(gd.getNextString());
+        int maxCircles = Integer.parseInt(gd.getNextString());
+        hit = Integer.parseInt(gd.getNextString());
         // ---------------------------------------------------------------------
 
         // imgFile =
@@ -177,7 +178,7 @@ public class Street_Speed_Sign implements PlugIn {
                 imgRgb.updateAndDraw();
             }
 
-            if (treffer >= hit);
+            if (treffer >= hit) ;
 //                IJ.log("point: " + x + "," + y + " radius:" + radius);
             else {
                 speedList.remove(i);
@@ -219,6 +220,7 @@ public class Street_Speed_Sign implements PlugIn {
 //            imgNew.getProcessor().dilate();
 //            imgNew.getProcessor().erode();
 
+
             new FileSaver(imgNew).saveAsPgm("plugins/img.pgm");
 
             String speed = OcrString.getString("plugins/img.png");
@@ -257,7 +259,7 @@ public class Street_Speed_Sign implements PlugIn {
                     ip.putPixel(x, y, Integer.MAX_VALUE);
             }
         /*
-		 * ImageConverter ic = new ImageConverter(img); ic.convertToGray8();
+         * ImageConverter ic = new ImageConverter(img); ic.convertToGray8();
 		 */
 
         // Convert to Binary

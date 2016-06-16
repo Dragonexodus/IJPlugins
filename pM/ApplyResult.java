@@ -93,6 +93,9 @@ public class ApplyResult {
 
             xml.addObject(sO.getSpeed(), xBB, yBB, w, w);
         }
+
+        duplicate.show(); //info Ergebnis wird angezeigt
+
         IJ.save(duplicate, outGraphicPath);
         xml.writeXMLFile(inFile.getAbsolutePath(), inFile.getName(), outXMLPath);
     }
