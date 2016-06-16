@@ -31,11 +31,11 @@ public class Street_Speed_Sign implements PlugIn {
         // GenericDialog -------------------------------------------------------
         GenericDialog gd = new GenericDialog("Street Speed Sign", IJ.getInstance());
         //gd.addStringField("Filepath", "/home/dragonexodus/Digitalebilderverarbeitung/Projekt/7.png",50);
-        gd.addStringField("Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png");
-        gd.addStringField("Minimum radius: ", "10");
-        gd.addStringField("Maximum radius: ", "50");
-        gd.addStringField("Increment radius: ", "2");
-        gd.addStringField("Number of circles", "6");
+        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png");
+        gd.addStringField("rmin Minimum radius: ", "10");
+        gd.addStringField("rmax Maximum radius: ", "50");
+        gd.addStringField("rinc Increment radius: ", "2");
+        gd.addStringField("cnum Number of circles", "6");
         gd.addStringField("Hits to detect circle", "6");
 
         gd.showDialog();
