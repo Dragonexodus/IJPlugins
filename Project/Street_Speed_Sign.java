@@ -216,9 +216,9 @@ public class Street_Speed_Sign implements PlugIn {
             ImagePlus imgNew = new ImagePlus("img", deleteRedColor(ipNew).getProcessor());
 
             //TODO einige Bilder werden nicht mehr erkannt
-            imgNew.getProcessor().dilate();
+//            imgNew.getProcessor().dilate();
+//            imgNew.getProcessor().erode();
 
-            //TODO KOMISCHEN Pfad ÄNDERN
             new FileSaver(imgNew).saveAsPgm("plugins/img.pgm");
 
             String speed = OcrString.getString("plugins/img.png");
