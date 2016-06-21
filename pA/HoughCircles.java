@@ -19,6 +19,7 @@ package plugins.pA; /**
  */
 
 import ij.IJ;
+import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import plugins.pM.SpeedObject;
@@ -109,8 +110,10 @@ public class HoughCircles {
             getCenterPoints(maxCircles);
         drawCircles(circlespixels);
 
-//        new ImagePlus("Hough Space [r=" + radiusMin + "]", newip).show(); // Shows only the hough space for the minimun radius
-//        new ImagePlus(maxCircles + " Circles Found", circlesip).show();
+        if (Globals.isImgsShow()) {
+            new ImagePlus("Hough Space [r=" + radiusMin + "]", newip).show(); // Shows only the hough space for the minimun radius
+            new ImagePlus(maxCircles + " Circles Found", circlesip).show();
+        }
     }
 
     void showAbout() {

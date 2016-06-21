@@ -3,6 +3,7 @@ package plugins.pM;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import plugins.pA.Globals;
 
 import java.awt.*;
 import java.io.File;
@@ -94,7 +95,8 @@ public class ApplyResult {
             xml.addObject(sO.getSpeed(), xBB, yBB, w, w);
         }
 
-        duplicate.show(); //info Ergebnis wird angezeigt
+        if (Globals.isImgsShow())
+            duplicate.show(); //info Ergebnis wird angezeigt
 
         IJ.save(duplicate, outGraphicPath);
         xml.writeXMLFile(inFile.getAbsolutePath(), inFile.getName(), outXMLPath);

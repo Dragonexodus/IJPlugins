@@ -6,6 +6,7 @@ import ij.plugin.PlugIn;
 import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import plugins.pA.Globals;
 import plugins.pA.HoughCircles;
 import plugins.pA.OcrString;
 import plugins.pM.ApplyResult;
@@ -31,12 +32,17 @@ public class Street_Speed_Sign implements PlugIn {
         // GenericDialog -------------------------------------------------------
         GenericDialog gd = new GenericDialog("Street Speed Sign", IJ.getInstance());
         //gd.addStringField("Filepath", "/home/dragonexodus/Digitalebilderverarbeitung/Projekt/7.png",50);
-        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png");
+//        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h25m05s821.png"); // 50 -> 5
+//        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h26m13s042.png"); // anderes Schild
+//        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h26m17s935.png"); // 50 geblendet
+//        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h26m18s343.png"); // 50 - gut
+        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png"); // 2 x 80 - gut
         gd.addStringField("rmin Minimum radius: ", "10");
         gd.addStringField("rmax Maximum radius: ", "50");
         gd.addStringField("rinc Increment radius: ", "2");
         gd.addStringField("cnum Number of circles", "6");
         gd.addStringField("Hits to detect circle", "6");
+        gd.addStringField("showDebug info", "0");
 
         gd.showDialog();
         if (gd.wasCanceled())
@@ -48,6 +54,7 @@ public class Street_Speed_Sign implements PlugIn {
         int radiusInc = Integer.parseInt(gd.getNextString());
         int maxCircles = Integer.parseInt(gd.getNextString());
         hit = Integer.parseInt(gd.getNextString());
+        Globals.setImgsShow(gd.getNextString());
         // ---------------------------------------------------------------------
 
         // imgFile =
@@ -69,7 +76,9 @@ public class Street_Speed_Sign implements PlugIn {
         hc.run(imgG8.getProcessor());
         speedList = hc.getSpeedList();
 
-        // imgG8.show();
+        if (Globals.isImgsShow())
+            imgG8.show();
+
         checkCirkles(imgG8, speedList);
 
         checkSpeedSign(imgDup, speedList);
@@ -102,14 +111,14 @@ public class Street_Speed_Sign implements PlugIn {
 
     private void checkCirkles(ImagePlus img, ArrayList<SpeedObject<Integer>> speedList) {
 
-        // info Testausgabe
-        boolean printTest = false;
+        //info Testausgabe
         ImagePlus imgRgb = img.duplicate();
         ImageConverter ic = new ImageConverter(imgRgb);
         ic.convertToRGB();
         ImageProcessor ipRgb = imgRgb.getProcessor();
         ipRgb.setColor(255); // blue
-        if (printTest)
+
+        if (Globals.isImgsShow())
             imgRgb.show();
 
         ImageProcessor ipG8 = img.getProcessor();
@@ -172,15 +181,16 @@ public class Street_Speed_Sign implements PlugIn {
             points.add(p);
 
             // info Testausgabe
-            if (printTest) {
+            if (Globals.isImgsShow()) {
                 for (int j = 0; j < points.size(); j++)
                     ipRgb.drawLine(x, y, (int) points.get(j).getX(), (int) points.get(j).getY());
                 imgRgb.updateAndDraw();
             }
 
-            if (treffer >= hit) ;
-//                IJ.log("point: " + x + "," + y + " radius:" + radius);
-            else {
+            if (treffer >= hit) {
+                if (Globals.isImgsShow())
+                    IJ.log("point: " + x + "," + y + " radius:" + radius);
+            } else {
                 speedList.remove(i);
                 i--;
             }
@@ -231,7 +241,8 @@ public class Street_Speed_Sign implements PlugIn {
                 if (speed.length() > 0) {
                     if (speedSigns.contains(Integer.parseInt(speed))) {
                         speedList.get(i).setSpeed(Integer.parseInt(speed));
-//                        IJ.log("speed: " + speed);
+                        if (Globals.isImgsShow())
+                            IJ.log("speed: " + speed);
                     } else {
                         speedList.remove(i);
                         i--;
