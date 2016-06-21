@@ -66,7 +66,6 @@ Das Ergebnisbild wird als \qq{\_RSD.png} im Quellordner gespeichert.
 Zusätzlich wird in diesen Ordner die Ergebnis-XML gespeichert.
 Die Speicherung von Ergebnissen erfolgt nur wenn Geschwindigkeitsschilder vollständig erkannt wurden.
 
-\pagebreak
 \section{Aufruf}
 Damit das Plugin verwendet werden kann, muss das Plugin zunächst über \qq{Compile and Run} in ImageJ kompiliert werden.
 Im Anschluss kann das Plugin über die Kommandozeile aufgerufen werden.
@@ -74,9 +73,10 @@ Im Anschluss kann das Plugin über die Kommandozeile aufgerufen werden.
 Aufruf per Kommandozeile:
 
 \begin{small}
-\textbf{./ImageJ -eval "run('Street Speed Sign', 'i=plugins/Project/result/test.png rmin=10 rmax=50 rinc=2 cnum=6 hits=6');"}
+\textbf{./ImageJ -eval "run('Street Speed Sign', 'i=plugins/Project/result/test.png rmin=10 rmax=50 rinc=2 cnum=6 hits=6 showdebug=1');"}
 \end{small}
 
+\pagebreak
 Folgende Parameter werden benötigt, damit die Erkennung funktioniert:\footnote{\textbf{Achtung:} Derzeit erfolgt keine Überprüfung der Eingangswerte auf Korrektheit!}
 
 
@@ -104,9 +104,13 @@ HoughCircle-Parameter:
 	\begin{itemize}
 		\item cnum=6
 	\end{itemize}
-	\item Anzahl der Treffer, damit der Kreis erkannt wird (0 <= 8), es werden Senkrechte, Vertikale und Diagonale Punkte verwendet um einen Kreis zu definieren
+	\item Anzahl Treffer, damit der Kreis erkannt wird (0 $\ge$ 8), es werden Senkrechte, Vertikale und Diagonale Punkte verwendet um einen Kreis zu definieren
 	\begin{itemize}
 		\item hits=6
+	\end{itemize}
+	\item Zeigt Debugausgaben, falls Eingabe $\ge$ 1
+	\begin{itemize}
+		\item showdebug=1
 	\end{itemize}
 \end{itemize}
 \end{document}
