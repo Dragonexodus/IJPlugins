@@ -22,13 +22,48 @@ Weiterhin muss diese Binärdatei ausführbar sein (Executable Flag gesetzt).
 
 Ergebnisse werden im Ordner der Eingangsdatei gespeichert.
 
-\pagebreak
 \section{Voraussetzungen}
 ImageJ muss mindestens mit der Java Version 7 arbeiten und der Compiler von ImageJ muss auf 1.7 gestellt werden!
 Ältere Versionen werden nicht unterstützt!
 
 GOCR muss im entsprechenden Unterordner des Plugins ausführbar sein.
 
+In ImageJ muss Street\_Speed\_Sign.java kompiliert werden, damit das Plugin erzeugt wird.
+
+\subsection{Ordner-Struktur}
+Das komplette Projekt muss innerhalb von ImageJ im Ordner-Plugins liegen:\footnote{Test-Klassen werden nicht gelistet}
+	\begin{itemize}
+		\item Project
+		\begin{itemize}
+			\item gocr
+				\begin{itemize}
+					\item gocr (executable binary)
+				\end{itemize}
+			\item plugins
+				\begin{itemize}
+					\item pA
+					\begin{itemize}
+						\item HoughCircles.java
+						\item OcrString.java
+					\end{itemize}
+					\item pM
+					\begin{itemize}
+						\item ApplyResult.java
+						\item SpeedObject.java
+						\item XML.java
+					\end{itemize}
+				\end{itemize}
+			\item result
+			\begin{itemize}
+				\item Quellbilder
+				\item Zielbilder
+				\item XML-Daten
+			\end{itemize}
+			\item Street\_Speed\_Sign.java
+		\end{itemize}
+	\end{itemize}
+
+\pagebreak
 \section{Ablauf}
 Das ImageJ-Plugin arbeitet wie folgt:
 
@@ -76,9 +111,7 @@ Aufruf per Kommandozeile:
 \textbf{./ImageJ -eval "run('Street Speed Sign', 'i=plugins/Project/result/test.png rmin=10 rmax=50 rinc=2 cnum=6 hits=6 showdebug=1');"}
 \end{small}
 
-\pagebreak
 Folgende Parameter werden benötigt, damit die Erkennung funktioniert:\footnote{\textbf{Achtung:} Derzeit erfolgt keine Überprüfung der Eingangswerte auf Korrektheit!}
-
 
 \begin{itemize}
 	\item Pfad zur Bilddatei
