@@ -35,8 +35,8 @@ public class Street_Speed_Sign implements PlugIn {
 //        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h25m05s821.png"); // 50 -> 5
 //        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h26m13s042.png"); // anderes Schild
 //        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h26m17s935.png"); // 50 geblendet
-//        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h26m18s343.png"); // 50 - gut
-        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png"); // 2 x 80 - gut
+        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h26m18s343.png"); // 50 - gut
+//        gd.addStringField("i Filepath", "plugins/Project/result/vlcsnap-2016-05-04-14h27m18s219.png"); // 2 x 80 - gut
         gd.addStringField("rmin Minimum radius: ", "10");
         gd.addStringField("rmax Maximum radius: ", "50");
         gd.addStringField("rinc Increment radius: ", "2");
